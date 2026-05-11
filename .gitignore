@@ -1,0 +1,19 @@
+# Local jars/tools
+checkstyle-8.44-all.jar
+biuoop-1.4.jar
+
+# Build output
+/bin/
+*.class
+
+# Local notes
+readmeforMe.md
+
+# IDE files
+/.idea/
+*.iml
+/.vscode/
+
+# OS files
+Thumbs.db
+.DS_Store
