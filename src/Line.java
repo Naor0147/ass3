@@ -208,4 +208,62 @@ public class Line {
         return Math.abs((dst1 + dst2) - line.length()) < GameConstants.EPSILON;
     }
 
+    /**
+     * If this line does not intersect with the rectangle, return null.
+     * Otherwise, return the closest intersection point to the
+     * start of the line.
+     * 
+     * @param rect
+     * @return return the closest intersection point to the start of the line
+     */
+    public Point closestIntersectionToStartOfLine(Rectangle rect) {
+        if (rect == null) {
+            return null;
+        }
+        Point minIntersection = null;
+        double minDst = Double.POSITIVE_INFINITY;
+        for (Point intersection : rect.intersectionPoints(this)) {
+            double dst = this.start.distance(intersection);
+            if (dst < minDst) {
+                minDst = dst;
+                minIntersection = intersection;
+            }
+        }
+        return minIntersection;
+    }
+
+    /**
+     * Calculate the distance from a point to this line segment.
+     * 
+     * @param point
+     * @return distance from the point to this line segment, or
+     *         GameConstants.THE_NULL_DISTANCE if the point is null.
+     */
+    public double distance(Point point) {
+        if (point == null) {
+            return GameConstants.THE_NULL_DISTANCE;
+        }
+        double x1 = this.start.getX();
+        double y1 = this.start.getY();
+        double x2 = this.end.getX();
+        double y2 = this.end.getY();
+        double pointX = point.getX();
+        double pointY = point.getY();
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double lineLengthSquared = dx * dx + dy * dy;
+        if (lineLengthSquared < GameConstants.EPSILON) {
+            return point.distance(this.start);
+        }
+
+        double t = ((pointX - x1) * dx + (pointY - y1) * dy) / lineLengthSquared;
+        t = Math.max(0, Math.min(1, t));
+
+        double closestX = x1 + t * (x2 - x1);
+        double closestY = y1 + t * (y2 - y1);
+
+        return point.distance(new Point(closestX, closestY));
+    }
+
 }

@@ -39,7 +39,7 @@ public class Rectangle {
     /**
      * Creates a rectangle from two corner points.
      *
-     * @param upperLeft the upper-left corner
+     * @param upperLeft  the upper-left corner
      * @param lowerRight the lower-right corner
      */
     public Rectangle(Point upperLeft, Point lowerRight) {
@@ -88,21 +88,24 @@ public class Rectangle {
         lines[3] = new Line(leftX, bottomY, leftX, topY);
     }
 
-
     /**
      * Gets the left top corner of the rectangle.
+     * 
      * @return the left top corner pount
      */
-    public Point getLeftTop() {
+    public Point getUpperLeft() {
         return this.pointLeftTop;
     }
+
     /**
      * Gets the right bottom corner of the rectangle.
+     * 
      * @return the right botom cornr point
      */
-    public Point getRightBottom() {
+    public Point getBottomRight() {
         return this.pointRightBottom;
     }
+
     /**
      * Gets the rectangle lines as line array.
      *
@@ -131,18 +134,34 @@ public class Rectangle {
     }
 
     /**
+     * Gets the rectangle width.
+     * 
+     * @return the width
+     */
+    public double getWidth() {
+        return pointRightBottom.getX() - pointLeftTop.getX();
+    }
+
+    /**
+     * Gets the rectangle height.
+     * 
+     * @return the height
+     */
+    public double getHeight() {
+        return pointRightBottom.getY() - pointLeftTop.getY();
+    }
+
+    /**
      * Draws the rectangle on the given surface.
      *
      * @param surface the DrawSurface to draw on
      */
     public void drawOn(DrawSurface surface) {
         surface.setColor(this.color);
-        int width = (int) (pointRightBottom.getX() - pointLeftTop.getX());
-        int height = (int) (pointRightBottom.getY() - pointLeftTop.getY());
+        int width = (int) this.getWidth();
+        int height = (int) this.getHeight();
         surface.fillRectangle((int) pointLeftTop.getX(), (int) pointLeftTop.getY(), width, height);
     }
-
-
 
     /**
      * Check if point is inside the rectangle.
@@ -159,5 +178,22 @@ public class Rectangle {
         boolean insideX = (x >= pointLeftTop.getX()) && (x <= pointRightBottom.getX());
         boolean insideY = (y >= pointLeftTop.getY()) && (y <= pointRightBottom.getY());
         return insideX && insideY;
+    }
+
+
+
+
+    /**Return a (possibly empty) List of intersection points
+     with the specified line.*/
+    public java.util.List<Point> intersectionPoints(Line line){
+        java.util.List<Point> intersectionPoints = new java.util.ArrayList<>();
+        for (Line edge : lines) {
+            Point intersection = edge.intersectionWith(line);
+            if (intersection != null) {
+                intersectionPoints.add(intersection);
+            }
+            
+        }
+        return intersectionPoints;
     }
 }

@@ -173,15 +173,15 @@ public final class GameEngine {
         int safty = radius;
         while (isInObstacle && attempts < maxAttempts) {
             attempts++;
-            p = getRandomCenterPointForBall(windowRectangle.getLeftTop(), windowRectangle.getRightBottom(), radius);
+            p = getRandomCenterPointForBall(windowRectangle.getUpperLeft(), windowRectangle.getBottomRight(), radius);
             isInObstacle = false;
 
             for (Rectangle obstacle : obstacles) {
                 // Expand the boundaries of the obstacle by the ball's radius (threshold)
-                double expandedMinX = obstacle.getLeftTop().getX() - safty;
-                double expandedMaxX = obstacle.getRightBottom().getX() + safty;
-                double expandedMinY = obstacle.getLeftTop().getY() - safty;
-                double expandedMaxY = obstacle.getRightBottom().getY() + safty;
+                double expandedMinX = obstacle.getUpperLeft().getX() - safty;
+                double expandedMaxX = obstacle.getBottomRight().getX() + safty;
+                double expandedMinY = obstacle.getUpperLeft().getY() - safty;
+                double expandedMaxY = obstacle.getBottomRight().getY() + safty;
 
                 // If the ball's center is inside this expanded bounding box, part of the ball
                 // overlaps the obstacle.
@@ -207,7 +207,7 @@ public final class GameEngine {
      * @return a random point inside the rectangle
      */
     public static Point createRandomPointInRect(Rectangle rect, int threshold) {
-        return GameEngine.getRandomCenterPointForBall(rect.getLeftTop(), rect.getRightBottom(), threshold);
+        return GameEngine.getRandomCenterPointForBall(rect.getUpperLeft(), rect.getBottomRight(), threshold);
     }
 
     /**
