@@ -43,4 +43,9 @@ public final class GameConstants {
      * safety margin multiplier.
      */
     public static final double SAFETY_MARGIN_MULTIPLIER = 1.5;
+
+    /**
+     * thickness of the border walls.
+     */
+    public static final int WALL_THICKNESS = 20;
 }

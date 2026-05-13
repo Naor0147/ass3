@@ -166,18 +166,23 @@ public class Ball implements Sprite {
      * Move the ball one step based on its velocity.
      */
     public void moveOneStep() {
+        if (this.environment == null) {
+            this.point = this.velocity.applyToPoint(this.point);
+            return;
+        }
 
-        // calcute the trajectory
+        // fix overlaps before moving
+        resolveOverlaps();
+
+        // where does the ball want to go this frame
         Point endPoint = this.velocity.applyToPoint(this.point);
         Line trajectory = new Line(this.point, endPoint);
         CollisionInfo collisionInfo = this.environment.getClosestCollision(trajectory);
         if (collisionInfo == null) {
-            // no collision, move normally
             this.point = endPoint;
             return;
         }
 
-        // collision, move to just before the collision point and update velocity
         Point collisionPoint = collisionInfo.getCollisionPoint();
         Collidable collidable = collisionInfo.getCollisionObject();
 
@@ -185,8 +190,9 @@ public class Ball implements Sprite {
         double dy = this.velocity.getDy();
         double speed = Math.sqrt((dx * dx) + (dy * dy));
 
+        // push the ball just behind the hit point so it doesnt get stuck
         if (speed > GameConstants.EPSILON) {
-            double backOff = (this.radius + GameConstants.EPSILON)*1.1; // back off distance to prevent sticking
+            double backOff = (this.radius + GameConstants.EPSILON) * 1.1;
             double newX = collisionPoint.getX() - (dx / speed) * backOff;
             double newY = collisionPoint.getY() - (dy / speed) * backOff;
             this.point = new Point(newX, newY);
@@ -197,10 +203,105 @@ public class Ball implements Sprite {
         this.velocity = collidable.hit(collisionPoint, this.velocity);
     }
 
+    private void resolveOverlaps() {
+        // go through every collidable and push the ball out if needed
+        for (Collidable collidable : this.environment.getCollidables()) {
+            fixOverlapWith(collidable);
+        }
+    }
+
+    private void fixOverlapWith(Collidable collidable) {
+        if (collidable == null) {
+            return;
+        }
+        Rectangle rect = collidable.getCollisionRectangle();
+        if (rect == null) {
+            return;
+        }
+
+        double left = rect.getUpperLeft().getX();
+        double right = rect.getBottomRight().getX();
+        double top = rect.getUpperLeft().getY();
+        double bottom = rect.getBottomRight().getY();
+
+        double cx = this.point.getX();
+        double cy = this.point.getY();
+        double target = this.radius + GameConstants.EPSILON;
+
+        double closestX = Math.max(left, Math.min(cx, right));
+        double closestY = Math.max(top, Math.min(cy, bottom));
+        double dx = cx - closestX;
+        double dy = cy - closestY;
+        double distSq = (dx * dx) + (dy * dy);
+
+        boolean inside = (cx >= left && cx <= right && cy >= top && cy <= bottom);
+        if (!inside && distSq >= target * target) {
+            return;
+        }
+
+        Point collisionPoint;
+        double normalX;
+        double normalY;
+
+        if (inside) {
+            double distLeft = Math.abs(cx - left);
+            double distRight = Math.abs(right - cx);
+            double distTop = Math.abs(cy - top);
+            double distBottom = Math.abs(bottom - cy);
+
+            if (distLeft <= distRight && distLeft <= distTop && distLeft <= distBottom) {
+                collisionPoint = new Point(left, cy);
+                normalX = -1;
+                normalY = 0;
+            } else if (distRight <= distTop && distRight <= distBottom) {
+                collisionPoint = new Point(right, cy);
+                normalX = 1;
+                normalY = 0;
+            } else if (distTop <= distBottom) {
+                collisionPoint = new Point(cx, top);
+                normalX = 0;
+                normalY = -1;
+            } else {
+                collisionPoint = new Point(cx, bottom);
+                normalX = 0;
+                normalY = 1;
+            }
+        } else {
+            double dist = Math.sqrt(distSq);
+            if (dist < GameConstants.EPSILON) {
+                return;
+            }
+            collisionPoint = new Point(closestX, closestY);
+            normalX = dx / dist;
+            normalY = dy / dist;
+        }
+
+        if (inside) {
+            this.velocity = collidable.hit(collisionPoint, this.velocity);
+        } else {
+            double dot = (this.velocity.getDx() * normalX) + (this.velocity.getDy() * normalY);
+            if (dot < 0) {
+                this.velocity = collidable.hit(collisionPoint, this.velocity);
+            }
+        }
+
+        this.point = new Point(
+                collisionPoint.getX() + normalX * target,
+                collisionPoint.getY() + normalY * target);
+    }
+
+    /**
+     * Update the ball for this frame.
+     */
     public void timePassed() {
         moveOneStep();
     }
 
+    /**
+     * Add this ball to the game.
+     *
+     * @param g the game to add to
+     */
     public void addToGame(Game g) {
         g.addSprite(this);
     }

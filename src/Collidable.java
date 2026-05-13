@@ -1,11 +1,20 @@
-
+/**
+ * Things the ball can collide with.
+ */
 public interface Collidable {
-   // Return the "collision shape" of the object.
+   /**
+    * Return the collision shape.
+    *
+    * @return the rect shape
+    */
    Rectangle getCollisionRectangle();
 
-   // Notify the object that we collided with it at collisionPoint with
-   // a given velocity.
-   // The return is the new velocity expected after the hit (based on
-   // the force the object inflicted on us).
+   /**
+    * Notify about a hit and return the new velocity.
+    *
+    * @param collisionPoint  point of the hit
+    * @param currentVelocity current ball velocity
+    * @return new velocity after the hit
+    */
    Velocity hit(Point collisionPoint, Velocity currentVelocity);
 }

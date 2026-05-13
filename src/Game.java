@@ -4,10 +4,12 @@ import biuoop.KeyboardSensor;
 import biuoop.Sleeper;
 import java.awt.Color;
 
+/**
+ * Main game runner and setup.
+ */
 public class Game {
     private static final String WINDOW_TITLE = "Arkanoid";
 
-    private static final int WALL_THICKNESS = 20;
     private static final Color FRAME_COLOR = new Color(150, 150, 150);
 
     private static final int BLOCK_WIDTH = 50;
@@ -29,7 +31,6 @@ public class Game {
     private static final int PADDLE_SPEED = 6;
     private static final int PADDLE_GAP_FROM_WALL = 0;
     private static final Color PADDLE_COLOR = new Color(251, 193, 3);
-    
 
     private static final int BALL_RADIUS = 6;
     private static final double BALL_SPEED = 6.0;
@@ -48,25 +49,40 @@ public class Game {
     private GameEnvironment environment;
     private Sleeper sleeper;
 
+    /**
+     * Make a new game.
+     */
     public Game() {
         this.sprites = new SpriteCollection();
         this.environment = new GameEnvironment();
         this.sleeper = new Sleeper();
     }
 
+    /**
+     * Add a collidable.
+     *
+     * @param c the collidable to add
+     */
     public void addCollidable(Collidable c) {
         this.environment.addCollidable(c);
     }
 
+    /**
+     * Add a sprite.
+     *
+     * @param s the sprite to add
+     */
     public void addSprite(Sprite s) {
         this.sprites.addSprite(s);
     }
 
     // Initialize a new game: create the Blocks and Ball (and Paddle)
     // and add them to the game.
+    /**
+     * Set up the game objects.
+     */
     public void initialize() {
         this.gui = new GUI(WINDOW_TITLE, GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
-
         addWalls();
         addBlocks();
         int paddleY = addPaddle();
@@ -74,6 +90,9 @@ public class Game {
     }
 
     // Run the game -- start the animation loop.
+    /**
+     * Run the animation loop.
+     */
     public void run() {
         int millisecondsPerFrame = MILLISECONDS_PER_SECOND / FRAMES_PER_SECOND;
         while (true) {
@@ -95,12 +114,13 @@ public class Game {
     }
 
     private void addWalls() {
-        Block top = createBlock(0, 0, GameConstants.WINDOW_WIDTH, WALL_THICKNESS, FRAME_COLOR);
-        Block left = createBlock(0, 0, WALL_THICKNESS, GameConstants.WINDOW_HEIGHT, FRAME_COLOR);
-        Block right = createBlock(GameConstants.WINDOW_WIDTH - WALL_THICKNESS, 0,
-                WALL_THICKNESS, GameConstants.WINDOW_HEIGHT, FRAME_COLOR);
-        Block bottom = createBlock(0, GameConstants.WINDOW_HEIGHT - WALL_THICKNESS,
-                GameConstants.WINDOW_WIDTH, WALL_THICKNESS, FRAME_COLOR);
+        int wt = GameConstants.WALL_THICKNESS;
+        Block top = createBlock(0, 0, GameConstants.WINDOW_WIDTH, wt, FRAME_COLOR);
+        Block left = createBlock(0, 0, wt, GameConstants.WINDOW_HEIGHT, FRAME_COLOR);
+        Block right = createBlock(GameConstants.WINDOW_WIDTH - wt, 0,
+                wt, GameConstants.WINDOW_HEIGHT, FRAME_COLOR);
+        Block bottom = createBlock(0, GameConstants.WINDOW_HEIGHT - wt,
+                GameConstants.WINDOW_WIDTH, wt, FRAME_COLOR);
 
         top.addToGame(this);
         left.addToGame(this);
@@ -109,7 +129,8 @@ public class Game {
     }
 
     private void addBlocks() {
-        int availableWidth = GameConstants.WINDOW_WIDTH - (2 * WALL_THICKNESS);
+        int wt = GameConstants.WALL_THICKNESS;
+        int availableWidth = GameConstants.WINDOW_WIDTH - (2 * wt);
         int maxBlocks = Math.min(MAX_BLOCKS_PER_ROW, availableWidth / BLOCK_WIDTH);
 
         for (int row = 0; row < BLOCK_ROWS; row++) {
@@ -119,7 +140,7 @@ public class Game {
             }
             Color rowColor = ROW_COLORS[row % ROW_COLORS.length];
             int y = BLOCK_START_Y + row * BLOCK_HEIGHT;
-            int startX = GameConstants.WINDOW_WIDTH - WALL_THICKNESS - (rowBlocks * BLOCK_WIDTH);
+            int startX = GameConstants.WINDOW_WIDTH - wt - (rowBlocks * BLOCK_WIDTH);
             for (int col = 0; col < rowBlocks; col++) {
                 int x = startX + col * BLOCK_WIDTH;
                 Block block = createBlock(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, rowColor);
@@ -129,7 +150,8 @@ public class Game {
     }
 
     private int addPaddle() {
-        int paddleY = GameConstants.WINDOW_HEIGHT - WALL_THICKNESS - PADDLE_HEIGHT - PADDLE_GAP_FROM_WALL;
+        int wt = GameConstants.WALL_THICKNESS;
+        int paddleY = GameConstants.WINDOW_HEIGHT - wt - PADDLE_HEIGHT - PADDLE_GAP_FROM_WALL;
         int paddleX = (GameConstants.WINDOW_WIDTH - PADDLE_WIDTH) / 2;
         KeyboardSensor keyboard = this.gui.getKeyboardSensor();
         Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), PADDLE_WIDTH, PADDLE_HEIGHT);

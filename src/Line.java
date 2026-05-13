@@ -45,6 +45,8 @@ public class Line {
     }
 
     /**
+     * Gets the length of this segment.
+     *
      * @return the segment length.
      */
     public double length() {
@@ -52,6 +54,8 @@ public class Line {
     }
 
     /**
+     * Gets the midpoint of this segment.
+     *
      * @return the midpoint of the segment.
      */
     public Point middle() {
@@ -59,6 +63,8 @@ public class Line {
     }
 
     /**
+     * Gets the start point of this segment.
+     *
      * @return the start point.
      */
     public Point start() {
@@ -66,6 +72,8 @@ public class Line {
     }
 
     /**
+     * Gets the end point of this segment.
+     *
      * @return the end point.
      */
     public Point end() {
@@ -120,7 +128,7 @@ public class Line {
             return null;
         }
 
-        // if the point are cloliner or parreal
+        // handle parallel or collinear lines
         double determnt = getDeterminant(other);
         if (Math.abs(determnt) < GameConstants.EPSILON) {
             if (this.start.equals(other.start)
@@ -212,9 +220,9 @@ public class Line {
      * If this line does not intersect with the rectangle, return null.
      * Otherwise, return the closest intersection point to the
      * start of the line.
-     * 
-     * @param rect
-     * @return return the closest intersection point to the start of the line
+     *
+     * @param rect rectangle to check
+     * @return closest intersection point to the start of the line
      */
     public Point closestIntersectionToStartOfLine(Rectangle rect) {
         if (rect == null) {
@@ -234,8 +242,8 @@ public class Line {
 
     /**
      * Calculate the distance from a point to this line segment.
-     * 
-     * @param point
+     *
+     * @param point the point to measure from
      * @return distance from the point to this line segment, or
      *         GameConstants.THE_NULL_DISTANCE if the point is null.
      */

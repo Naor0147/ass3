@@ -37,6 +37,18 @@ public class Rectangle {
     }
 
     /**
+     * Creates a rectangle from an upper-left corner, width, and height.
+     *
+     * @param upperLeft the upper-left corner
+     * @param width     the rectangle width
+     * @param height    the rectangle heigth
+     */
+    public Rectangle(Point upperLeft, double width, double height) {
+        setCorners(upperLeft, new Point(upperLeft.getX() + width, upperLeft.getY() + height));
+        updateRectangleLines();
+    }
+
+    /**
      * Creates a rectangle from two corner points.
      *
      * @param upperLeft  the upper-left corner
@@ -90,7 +102,7 @@ public class Rectangle {
 
     /**
      * Gets the left top corner of the rectangle.
-     * 
+     *
      * @return the left top corner pount
      */
     public Point getUpperLeft() {
@@ -99,7 +111,7 @@ public class Rectangle {
 
     /**
      * Gets the right bottom corner of the rectangle.
-     * 
+     *
      * @return the right botom cornr point
      */
     public Point getBottomRight() {
@@ -135,7 +147,7 @@ public class Rectangle {
 
     /**
      * Gets the rectangle width.
-     * 
+     *
      * @return the width
      */
     public double getWidth() {
@@ -144,7 +156,7 @@ public class Rectangle {
 
     /**
      * Gets the rectangle height.
-     * 
+     *
      * @return the height
      */
     public double getHeight() {
@@ -180,19 +192,20 @@ public class Rectangle {
         return insideX && insideY;
     }
 
-
-
-
-    /**Return a (possibly empty) List of intersection points
-     with the specified line.*/
-    public java.util.List<Point> intersectionPoints(Line line){
+    /**
+     * Return a (possibly empty) list of intersection points.
+     *
+     * @param line the line to check
+     * @return list of intersection points (can be empty)
+     */
+    public java.util.List<Point> intersectionPoints(Line line) {
         java.util.List<Point> intersectionPoints = new java.util.ArrayList<>();
         for (Line edge : lines) {
             Point intersection = edge.intersectionWith(line);
             if (intersection != null) {
                 intersectionPoints.add(intersection);
             }
-            
+
         }
         return intersectionPoints;
     }

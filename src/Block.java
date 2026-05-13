@@ -1,9 +1,17 @@
 import biuoop.DrawSurface;
 import java.awt.Color;
 
+/**
+ * Basic blok you can hit.
+ */
 public class Block implements Collidable, Sprite {
     private Rectangle rectangle;
 
+    /**
+     * Build a block with a rect.
+     *
+     * @param rectangle the block shape
+     */
     public Block(Rectangle rectangle) {
         this.rectangle = rectangle;
     }
@@ -54,6 +62,11 @@ public class Block implements Collidable, Sprite {
     public void timePassed() {
     }
 
+    /**
+     * Add this block to the game.
+     *
+     * @param g game to add to
+     */
     public void addToGame(Game g) {
         g.addCollidable(this);
         g.addSprite(this);

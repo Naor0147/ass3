@@ -35,12 +35,14 @@ public class Paddle implements Sprite, Collidable {
 
     /**
      * Moves the paddle to the left, wrapping around the screen edges.
+     * The paddle stays within the wall boundaries.
      */
     public void moveLeft() {
         double newX = this.rect.getUpperLeft().getX() - this.speed;
         double width = this.rect.getWidth();
-        if (newX < 0) {
-            newX = GameConstants.WINDOW_WIDTH - width;
+        // wrap to the right side (but inside the right wall)
+        if (newX < GameConstants.WALL_THICKNESS) {
+            newX = GameConstants.WINDOW_WIDTH - GameConstants.WALL_THICKNESS - width;
         }
         this.rect = new Rectangle(new Point(newX, this.rect.getUpperLeft().getY()),
                 (int) width, (int) this.rect.getHeight());
@@ -49,12 +51,14 @@ public class Paddle implements Sprite, Collidable {
 
     /**
      * Moves the paddle to the right, wrapping around the screen edges.
+     * The paddle stays within the wall boundaries.
      */
     public void moveRight() {
         double newX = this.rect.getUpperLeft().getX() + this.speed;
         double width = this.rect.getWidth();
-        if (newX + width > GameConstants.WINDOW_WIDTH) {
-            newX = 0;
+        // wrap to the left side (but inside the left wall)
+        if (newX + width > GameConstants.WINDOW_WIDTH - GameConstants.WALL_THICKNESS) {
+            newX = GameConstants.WALL_THICKNESS;
         }
         this.rect = new Rectangle(new Point(newX, this.rect.getUpperLeft().getY()),
                 (int) width, (int) this.rect.getHeight());
@@ -77,7 +81,6 @@ public class Paddle implements Sprite, Collidable {
     public void drawOn(DrawSurface d) {
         d.setColor(this.color);
         this.rect.drawOn(d);
-        // Add a black outline for better visibility
         d.setColor(Color.BLACK);
         d.drawRectangle((int) rect.getUpperLeft().getX(), (int) rect.getUpperLeft().getY(),
                 (int) rect.getWidth(), (int) rect.getHeight());
@@ -96,32 +99,23 @@ public class Paddle implements Sprite, Collidable {
         double startX = this.rect.getUpperLeft().getX();
         double hitX = collisionPoint.getX();
 
-        // Calculate the speed (scalar) of the current velocity
         double dx = currentVelocity.getDx();
         double dy = currentVelocity.getDy();
         double speedMagnitude = Math.sqrt(dx * dx + dy * dy);
 
-        // Divide the paddle into 5 equal regions
+        // the paddle is split into 5 equal zones
         double regionWidth = paddleWidth / 5;
 
-        // Region 1: Leftmost (300 degrees)
         if (hitX < startX + regionWidth) {
             return Velocity.fromAngleAndSpeed(ANGLE_LEFTMOST, speedMagnitude);
-        }
-        // Region 2: Mid-left (330 degrees)
-        else if (hitX < startX + 2 * regionWidth) {
+        } else if (hitX < startX + 2 * regionWidth) {
             return Velocity.fromAngleAndSpeed(ANGLE_MID_LEFT, speedMagnitude);
-        }
-        // Region 3: Center (Standard bounce - reverse $dy$)
-        else if (hitX < startX + 3 * regionWidth) {
+        } else if (hitX < startX + 3 * regionWidth) {
+            // middle region - just flip vertical
             return new Velocity(dx, -dy);
-        }
-        // Region 4: Mid-right (30 degrees)
-        else if (hitX < startX + 4 * regionWidth) {
+        } else if (hitX < startX + 4 * regionWidth) {
             return Velocity.fromAngleAndSpeed(ANGLE_MID_RIGHT, speedMagnitude);
-        }
-        // Region 5: Rightmost (60 degrees)
-        else {
+        } else {
             return Velocity.fromAngleAndSpeed(ANGLE_RIGHTMOST, speedMagnitude);
         }
     }
