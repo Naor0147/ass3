@@ -3,7 +3,7 @@ import biuoop.DrawSurface;
 /**
  * Ball class with a center point, radius, and color for the game.
  */
-public class Ball {
+public class Ball implements Sprite {
 
     // fields
     private Point point;
@@ -11,8 +11,7 @@ public class Ball {
     private java.awt.Color color;
     private Velocity velocity;
 
-    // obstacles
-    private Line[] obstacles;
+    private GameEnvironment environment;
 
     // const
     private static final int MAX_RADIUS = 100;
@@ -32,6 +31,16 @@ public class Ball {
         this.point = (center != null) ? center : new Point(this.radius, this.radius);
         this.color = (color != null) ? color : java.awt.Color.BLACK;
         this.velocity = new Velocity(0, 0);
+
+    }
+
+    /**
+     * Initializes the ball with a game environment.
+     *
+     * @param environment the game environment
+     */
+    public void init(GameEnvironment environment) {
+        this.environment = environment;
 
     }
 
@@ -157,44 +166,42 @@ public class Ball {
      * Move the ball one step based on its velocity.
      */
     public void moveOneStep() {
-        if (obstacles == null) {
-            this.point = velocity.applyToPoint(this.point);
+
+        // calcute the trajectory
+        Point endPoint = this.velocity.applyToPoint(this.point);
+        Line trajectory = new Line(this.point, endPoint);
+        CollisionInfo collisionInfo = this.environment.getClosestCollision(trajectory);
+        if (collisionInfo == null) {
+            // no collision, move normally
+            this.point = endPoint;
             return;
         }
-        CollisionEngine.resolveBallLineCollision(this, this.obstacles);
+
+        // collision, move to just before the collision point and update velocity
+        Point collisionPoint = collisionInfo.getCollisionPoint();
+        Collidable collidable = collisionInfo.getCollisionObject();
+
+        double dx = this.velocity.getDx();
+        double dy = this.velocity.getDy();
+        double speed = Math.sqrt((dx * dx) + (dy * dy));
+
+        if (speed > GameConstants.EPSILON) {
+            double backOff = (this.radius + GameConstants.EPSILON)*1.1; // back off distance to prevent sticking
+            double newX = collisionPoint.getX() - (dx / speed) * backOff;
+            double newY = collisionPoint.getY() - (dy / speed) * backOff;
+            this.point = new Point(newX, newY);
+        } else {
+            this.point = collisionPoint;
+        }
+
+        this.velocity = collidable.hit(collisionPoint, this.velocity);
     }
 
-    /**
-     * Sets the obstacles for the ball.
-     *
-     * @param obstacles array of obstacle lines
-     */
-    public void setObstacles(Line[] obstacles) {
-        this.obstacles = obstacles;
+    public void timePassed() {
+        moveOneStep();
     }
 
-    /**
-     * Adds obstacles to the ball.
-     *
-     * @param newObstacles array of the new obstacle lines
-     */
-    public void addObstacles(Line[] newObstacles) {
-        if (newObstacles == null) {
-            return;
-        }
-        if (this.obstacles == null) {
-            this.obstacles = newObstacles;
-            return;
-
-        }
-        // combine the old with new
-        Line[] combined = new Line[this.obstacles.length + newObstacles.length];
-        for (int i = 0; i < this.obstacles.length; i++) {
-            combined[i] = this.obstacles[i];
-        }
-        for (int i = 0; i < newObstacles.length; i++) {
-            combined[this.obstacles.length + i] = newObstacles[i];
-        }
-        this.obstacles = combined;
+    public void addToGame(Game g) {
+        g.addSprite(this);
     }
 }
