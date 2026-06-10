@@ -1,3 +1,5 @@
+import game.Game;
+
 /**
  * Entrey point for ass3 game.
  */

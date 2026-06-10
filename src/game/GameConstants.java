@@ -1,3 +1,5 @@
+package game;
+
 /**
  * save all the game constants for easier acces.
  */

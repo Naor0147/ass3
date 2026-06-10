@@ -1,3 +1,7 @@
+package geometry;
+
+import game.GameConstants;
+
 /**
  * Represents a 2D point with x and y coordinates.
  */

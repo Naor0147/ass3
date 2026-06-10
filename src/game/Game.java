@@ -1,8 +1,20 @@
+package game;
+
 import biuoop.DrawSurface;
 import biuoop.GUI;
 import biuoop.KeyboardSensor;
 import biuoop.Sleeper;
 import java.awt.Color;
+import gameobjects.Ball;
+import gameobjects.Block;
+import gameobjects.Paddle;
+import gameobjects.BlockRemover;
+import gameobjects.Sprite;
+import gameobjects.SpriteCollection;
+import collision.Collidable;
+import collision.GameEnvironment;
+import geometry.Point;
+import geometry.Rectangle;
 
 /**
  * Main game runner and setup.
@@ -48,11 +60,13 @@ public class Game {
     private SpriteCollection sprites;
     private GameEnvironment environment;
     private Sleeper sleeper;
+    private Counter blockCounter;
 
     /**
      * Make a new game.
      */
     public Game() {
+        this.blockCounter = new Counter();
         this.sprites = new SpriteCollection();
         this.environment = new GameEnvironment();
         this.sleeper = new Sleeper();
@@ -73,6 +87,7 @@ public class Game {
      * @param s the sprite to add
      */
     public void addSprite(Sprite s) {
+
         this.sprites.addSprite(s);
     }
 
@@ -133,10 +148,12 @@ public class Game {
     }
 
     private void addBlocks() {
+
         int wt = GameConstants.WALL_THICKNESS;
         int availableWidth = GameConstants.WINDOW_WIDTH - (2 * wt);
         int maxBlocks = Math.min(MAX_BLOCKS_PER_ROW, availableWidth / BLOCK_WIDTH);
 
+        BlockRemover blockRemover = new BlockRemover(this, this.blockCounter);
         for (int row = 0; row < BLOCK_ROWS; row++) {
             int rowBlocks = maxBlocks - row;
             if (rowBlocks <= 0) {
@@ -148,7 +165,9 @@ public class Game {
             for (int col = 0; col < rowBlocks; col++) {
                 int x = startX + col * BLOCK_WIDTH;
                 Block block = createBlock(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, rowColor);
+                block.addHitListener(blockRemover);
                 block.addToGame(this);
+                this.blockCounter.increase(1);
             }
         }
     }
@@ -193,4 +212,17 @@ public class Game {
         d.fillRectangle(0, 0, GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
     }
 
+    public void removeCollidable(Collidable c) {
+        if (this.environment == null || this.environment.getCollidables() == null) {
+            return;
+        }
+        this.environment.getCollidables().remove(c);
+    }
+
+    public void removeSprite(Sprite s) {
+        if (this.sprites == null || this.sprites.getSprites() == null) {
+            return;
+        }
+        this.sprites.getSprites().remove(s);
+    }
 }

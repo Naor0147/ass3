@@ -1,3 +1,7 @@
+package collision;
+
+import geometry.Point;
+
 /**
  * Info about a collision event.
  */

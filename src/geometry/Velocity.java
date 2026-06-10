@@ -1,3 +1,5 @@
+package geometry;
+
 /**
  * Represents the velocity of an object.
  */

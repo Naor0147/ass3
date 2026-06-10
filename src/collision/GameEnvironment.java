@@ -1,3 +1,9 @@
+package collision;
+
+import geometry.Line;
+import geometry.Point;
+import geometry.Rectangle;
+
 /**
  * Holds the collidable objects in the game.
  */

@@ -1,3 +1,5 @@
+package gameobjects;
+
 import java.util.List;
 import biuoop.DrawSurface;
 
@@ -36,7 +38,7 @@ public class SpriteCollection {
      * Call timePassed on all sprites.
      */
     public void notifyAllTimePassed() {
-        for (Sprite sprite : this.sprites) {
+        for (Sprite sprite : new java.util.ArrayList<>(this.sprites)) {
             sprite.timePassed();
         }
     }
@@ -47,7 +49,7 @@ public class SpriteCollection {
      * @param d surface to draw on
      */
     public void drawAllOn(DrawSurface d) {
-        for (Sprite sprite : this.sprites) {
+        for (Sprite sprite : new java.util.ArrayList<>(this.sprites)) {
             sprite.drawOn(d);
         }
     }

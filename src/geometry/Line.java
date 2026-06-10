@@ -1,3 +1,7 @@
+package geometry;
+
+import game.GameConstants;
+
 /**
  * Simple line segment between two points.
  */
@@ -224,7 +228,7 @@ public class Line {
      * @param rect rectangle to check
      * @return closest intersection point to the start of the line
      */
-    public Point closestIntersectionToStartOfLine(Rectangle rect) {
+    public Point closestIntersectionToStartOfLine(geometry.Rectangle rect) {
         if (rect == null) {
             return null;
         }

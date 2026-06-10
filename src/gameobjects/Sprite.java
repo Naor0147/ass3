@@ -1,3 +1,5 @@
+package gameobjects;
+
 import biuoop.DrawSurface;
 
 /**

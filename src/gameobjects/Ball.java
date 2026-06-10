@@ -1,4 +1,13 @@
+package gameobjects;
+
 import biuoop.DrawSurface;
+import geometry.Point;
+import geometry.Velocity;
+import geometry.Line;
+import collision.Collidable;
+import collision.CollisionInfo;
+import collision.GameEnvironment;
+import game.GameConstants;
 
 /**
  * Ball class with a center point, radius, and color for the game.
@@ -200,12 +209,12 @@ public class Ball implements Sprite {
             this.point = collisionPoint;
         }
 
-        this.velocity = collidable.hit(collisionPoint, this.velocity);
+        this.velocity = collidable.hit(this, collisionPoint, this.velocity);
     }
 
     private void resolveOverlaps() {
         // go through every collidable and push the ball out if needed
-        for (Collidable collidable : this.environment.getCollidables()) {
+        for (Collidable collidable : new java.util.ArrayList<>(this.environment.getCollidables())) {
             fixOverlapWith(collidable);
         }
     }
@@ -214,7 +223,7 @@ public class Ball implements Sprite {
         if (collidable == null) {
             return;
         }
-        Rectangle rect = collidable.getCollisionRectangle();
+        geometry.Rectangle rect = collidable.getCollisionRectangle();
         if (rect == null) {
             return;
         }
@@ -277,11 +286,11 @@ public class Ball implements Sprite {
         }
 
         if (inside) {
-            this.velocity = collidable.hit(collisionPoint, this.velocity);
+            this.velocity = collidable.hit(this, collisionPoint, this.velocity);
         } else {
             double dot = (this.velocity.getDx() * normalX) + (this.velocity.getDy() * normalY);
             if (dot < 0) {
-                this.velocity = collidable.hit(collisionPoint, this.velocity);
+                this.velocity = collidable.hit(this, collisionPoint, this.velocity);
             }
         }
 
@@ -302,7 +311,7 @@ public class Ball implements Sprite {
      *
      * @param g the game to add to
      */
-    public void addToGame(Game g) {
+    public void addToGame(game.Game g) {
         g.addSprite(this);
     }
 }

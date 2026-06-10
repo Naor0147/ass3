@@ -1,3 +1,10 @@
+package collision;
+
+import geometry.Rectangle;
+import geometry.Point;
+import geometry.Velocity;
+import gameobjects.Ball;
+
 /**
  * Things the ball can collide with.
  */
@@ -16,5 +23,5 @@ public interface Collidable {
     * @param currentVelocity current ball velocity
     * @return new velocity after the hit
     */
-   Velocity hit(Point collisionPoint, Velocity currentVelocity);
+   Velocity hit(Ball hitter, Point collisionPoint, Velocity currentVelocity);
 }

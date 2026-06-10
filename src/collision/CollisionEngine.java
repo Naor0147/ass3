@@ -1,3 +1,10 @@
+package collision;
+
+import gameobjects.Ball;
+import geometry.Line;
+import geometry.Point;
+import game.GameConstants;
+
 /**
  * Handles the collision aspect of the game.
  */

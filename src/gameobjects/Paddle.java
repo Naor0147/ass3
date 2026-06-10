@@ -1,6 +1,13 @@
+package gameobjects;
+
 import biuoop.DrawSurface;
 import biuoop.KeyboardSensor;
 import java.awt.Color;
+import geometry.Point;
+import geometry.Rectangle;
+import geometry.Velocity;
+import collision.Collidable;
+import game.GameConstants;
 
 /**
  * The Paddle is the player-controlled block in the game.
@@ -96,7 +103,7 @@ public class Paddle implements Sprite, Collidable {
     }
 
     @Override
-    public Velocity hit(Point collisionPoint, Velocity currentVelocity) {
+    public Velocity hit(Ball hitter, Point collisionPoint, Velocity currentVelocity) {
         double paddleWidth = this.rect.getWidth();
         double startX = this.rect.getUpperLeft().getX();
         double hitX = collisionPoint.getX();
@@ -127,7 +134,7 @@ public class Paddle implements Sprite, Collidable {
      *
      * @param g the game object.
      */
-    public void addToGame(Game g) {
+    public void addToGame(game.Game g) {
         g.addSprite(this);
         g.addCollidable(this);
     }

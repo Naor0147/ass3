@@ -8,7 +8,7 @@
 
     <!-- Define a property, which is like a variable for the build file, -->
     <!--  with the classpath for all compilation & execution targets. -->
-    <property name="classpath" value="bin:biuoop-1.4.jar" />
+    <property name="classpath" value="bin;biuoop-1.4.jar" />
 
     <!-- Compile all java files under `src`, and export .class files into `bin` -->
     <target name="compile">
@@ -34,7 +34,7 @@
     <target name="check">
         <java jar="checkstyle-8.44-all.jar" fork="true">
             <arg line="-c biuoop.xml" />
-            <arg line="src/*.java"/>
+            <arg line="src/**/*.java"/>
         </java>
     </target>
 
