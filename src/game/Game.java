@@ -8,7 +8,10 @@ import java.awt.Color;
 import gameobjects.Ball;
 import gameobjects.Block;
 import gameobjects.Paddle;
+import gameobjects.BallRemover;
 import gameobjects.BlockRemover;
+import gameobjects.ScoreTrackingListener;
+import gameobjects.ScoreIndicator;
 import gameobjects.Sprite;
 import gameobjects.SpriteCollection;
 import collision.Collidable;
@@ -46,9 +49,7 @@ public class Game {
 
     private static final int BALL_RADIUS = 6;
     private static final double BALL_SPEED = 6.0;
-    private static final int BALL1_OFFSET_Y = 40;
-    private static final int BALL2_OFFSET_X = 30;
-    private static final int BALL2_OFFSET_Y = 60;
+    private static final int BALL_OFFSET_Y = 40;
     private static final Color BALL_COLOR = Color.WHITE;
 
     private static final int FRAMES_PER_SECOND = 60;
@@ -61,12 +62,15 @@ public class Game {
     private GameEnvironment environment;
     private Sleeper sleeper;
     private Counter blockCounter;
-
+    private Counter availableBalls;
+    private Counter score;
     /**
      * Make a new game.
      */
     public Game() {
         this.blockCounter = new Counter();
+        this.availableBalls = new Counter();
+        this.score = new Counter();
         this.sprites = new SpriteCollection();
         this.environment = new GameEnvironment();
         this.sleeper = new Sleeper();
@@ -104,6 +108,7 @@ public class Game {
         addWalls();
         addBlocks();
         addBalls(paddleY);
+        addSprite(new ScoreIndicator(this.score));
     }
 
     // Run the game -- start the animation loop.
@@ -114,7 +119,7 @@ public class Game {
         int millisecondsPerFrame = MILLISECONDS_PER_SECOND / FRAMES_PER_SECOND;
 
         sleeper.sleepFor(200);
-        while (true) {
+        while (this.blockCounter.getValue() > 0 && this.availableBalls.getValue() > 0) {
             long startTime = System.currentTimeMillis(); // timing
 
             DrawSurface d = gui.getDrawSurface();
@@ -130,6 +135,15 @@ public class Game {
                 sleeper.sleepFor(milliSecondLeftToSleep);
             }
         }
+        if (this.blockCounter.getValue() == 0) {
+            this.score.increase(100);
+            System.out.println("You Win!");
+            System.out.println("Your score is: " + this.score.getValue());
+        } else {
+            System.out.println("Game Over.");
+            System.out.println("Your score is: " + this.score.getValue());
+        }
+        gui.close();
     }
 
     private void addWalls() {
@@ -145,6 +159,10 @@ public class Game {
         left.addToGame(this);
         right.addToGame(this);
         bottom.addToGame(this);
+
+        BallRemover ballRemover = new BallRemover(this, this.availableBalls);
+        bottom.addHitListener(ballRemover);
+
     }
 
     private void addBlocks() {
@@ -154,6 +172,7 @@ public class Game {
         int maxBlocks = Math.min(MAX_BLOCKS_PER_ROW, availableWidth / BLOCK_WIDTH);
 
         BlockRemover blockRemover = new BlockRemover(this, this.blockCounter);
+        ScoreTrackingListener scoreListener = new ScoreTrackingListener(this.score);
         for (int row = 0; row < BLOCK_ROWS; row++) {
             int rowBlocks = maxBlocks - row;
             if (rowBlocks <= 0) {
@@ -165,6 +184,7 @@ public class Game {
             for (int col = 0; col < rowBlocks; col++) {
                 int x = startX + col * BLOCK_WIDTH;
                 Block block = createBlock(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, rowColor);
+                block.addHitListener(scoreListener);
                 block.addHitListener(blockRemover);
                 block.addToGame(this);
                 this.blockCounter.increase(1);
@@ -189,9 +209,14 @@ public class Game {
     }
 
     private void addBalls(int paddleY) {
-        double centerX = GameConstants.WINDOW_WIDTH / 2.0;
-        addBall(new Point(centerX, paddleY - BALL1_OFFSET_Y), BALL_SPEED, -BALL_SPEED);
-        addBall(new Point(centerX + BALL2_OFFSET_X, paddleY - BALL2_OFFSET_Y), -BALL_SPEED, -BALL_SPEED);
+        int numBalls = GameConstants.NUMBER_OF_BALLS;
+        double paddleCenterX = GameConstants.WINDOW_WIDTH / 2.0;
+        double spread = PADDLE_WIDTH / (double) (numBalls + 1);
+        for (int i = 0; i < numBalls; i++) {
+            double x = paddleCenterX - (PADDLE_WIDTH / 2.0) + spread * (i + 1);
+            double dx = (i % 2 == 0) ? BALL_SPEED : -BALL_SPEED;
+            addBall(new Point(x, paddleY - BALL_OFFSET_Y), dx, -BALL_SPEED);
+        }
     }
 
     private void addBall(Point center, double dx, double dy) {
@@ -199,6 +224,7 @@ public class Game {
         ball.setVelocity(dx, dy);
         ball.init(this.environment);
         ball.addToGame(this);
+        this.availableBalls.increase(1);
     }
 
     private Block createBlock(int x, int y, int width, int height, Color color) {
@@ -212,6 +238,11 @@ public class Game {
         d.fillRectangle(0, 0, GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
     }
 
+    /**
+     * Remove a collidable from the game environment.
+     *
+     * @param c the collidable to remove
+     */
     public void removeCollidable(Collidable c) {
         if (this.environment == null || this.environment.getCollidables() == null) {
             return;
@@ -219,6 +250,11 @@ public class Game {
         this.environment.getCollidables().remove(c);
     }
 
+    /**
+     * Remove a sprite from the sprite collection.
+     *
+     * @param s the sprite to remove
+     */
     public void removeSprite(Sprite s) {
         if (this.sprites == null || this.sprites.getSprites() == null) {
             return;

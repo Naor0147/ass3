@@ -50,4 +50,9 @@ public final class GameConstants {
      * thickness of the border walls.
      */
     public static final int WALL_THICKNESS = 20;
+
+    /**
+     * number of balls in the game.
+     */
+    public static final int NUMBER_OF_BALLS = 3;
 }

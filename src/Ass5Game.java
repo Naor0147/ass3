@@ -1,13 +1,13 @@
 import game.Game;
 
 /**
- * Entrey point for ass3 game.
+ * Entry point for assignment 5 game.
  */
-public class Ass3Game {
+public class Ass5Game {
     /**
      * Start the game loop.
      *
-     * @param args cmd argumets (not used)
+     * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
         Game game = new Game();

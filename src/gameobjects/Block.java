@@ -33,7 +33,7 @@ public class Block implements Collidable, Sprite, HitNotifier {
     }
 
     @Override
-    public Velocity hit(Ball hitter,Point collisionPoint, Velocity currentVelocity) {
+    public Velocity hit(Ball hitter, Point collisionPoint, Velocity currentVelocity) {
         double dx = currentVelocity.getDx();
         double dy = currentVelocity.getDy();
 
@@ -85,10 +85,21 @@ public class Block implements Collidable, Sprite, HitNotifier {
 
     }
 
+    /**
+     * Check if the ball color matches this block color.
+     *
+     * @param ball the ball to check
+     * @return true if colors match
+     */
     public boolean ballColorMatch(Ball ball) {
         return this.rectangle.getColor().equals(ball.getColor());
     }
 
+    /**
+     * Remove this block from the game.
+     *
+     * @param game the game to remove from
+     */
     public void removeFromGame(Game game) {
         game.removeCollidable(this);
         game.removeSprite(this);

@@ -21,7 +21,7 @@
     </target>
 
     <target name="run" depends="compile" >
-        <java classname="Ass3Game" classpath="${classpath}" fork="true">
+        <java classname="Ass5Game" classpath="${classpath}" fork="true">
 
         </java>
     </target>
@@ -32,9 +32,14 @@
 
     <!-- Run checkstyle on all our source files -->
     <target name="check">
+        <pathconvert property="checkstyle.files" pathsep=" ">
+            <fileset dir="src" casesensitive="yes">
+                <include name="**/*.java"/>
+            </fileset>
+        </pathconvert>
         <java jar="checkstyle-8.44-all.jar" fork="true">
             <arg line="-c biuoop.xml" />
-            <arg line="src/**/*.java"/>
+            <arg line="${checkstyle.files}"/>
         </java>
     </target>
 

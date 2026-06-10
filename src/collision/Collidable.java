@@ -19,6 +19,7 @@ public interface Collidable {
    /**
     * Notify about a hit and return the new velocity.
     *
+    * @param hitter          the ball that hit this collidable
     * @param collisionPoint  point of the hit
     * @param currentVelocity current ball velocity
     * @return new velocity after the hit

@@ -97,6 +97,14 @@ public class Ball implements Sprite {
     public java.awt.Color getColor() {
         return this.color;
     }
+    /**
+     * Sets the color of the ball.
+     *
+     * @param newColor the new color
+     */
+    public void setColor(java.awt.Color newColor) {
+        this.color = (newColor != null) ? newColor : this.color;
+    }
 
     /**
      * Gets the velocity of the ball.
@@ -313,5 +321,13 @@ public class Ball implements Sprite {
      */
     public void addToGame(game.Game g) {
         g.addSprite(this);
+    }
+    /**
+     * Remove this ball from the game.
+     *
+     * @param g the game to remove from
+     */
+    public void removeFromGame(game.Game g) {
+        g.removeSprite(this);
     }
 }
