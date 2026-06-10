@@ -35,14 +35,15 @@ public class Paddle implements Sprite, Collidable {
 
     /**
      * Moves the paddle to the left, wrapping around the screen edges.
-     * The paddle stays within the wall boundaries.
+     * The paddle wraps smoothly across the screen boundary.
      */
     public void moveLeft() {
         double newX = this.rect.getUpperLeft().getX() - this.speed;
         double width = this.rect.getWidth();
-        // wrap to the right side (but inside the right wall)
-        if (newX < GameConstants.WALL_THICKNESS) {
-            newX = GameConstants.WINDOW_WIDTH - GameConstants.WALL_THICKNESS - width;
+        // keep x in [-WINDOW_WIDTH, WINDOW_WIDTH) so paired paddles stay one screen
+        // apart
+        if (newX < -GameConstants.WINDOW_WIDTH) {
+            newX += 2.0 * GameConstants.WINDOW_WIDTH;
         }
         this.rect = new Rectangle(new Point(newX, this.rect.getUpperLeft().getY()),
                 (int) width, (int) this.rect.getHeight());
@@ -51,14 +52,15 @@ public class Paddle implements Sprite, Collidable {
 
     /**
      * Moves the paddle to the right, wrapping around the screen edges.
-     * The paddle stays within the wall boundaries.
+     * The paddle wraps smoothly across the screen boundary.
      */
     public void moveRight() {
         double newX = this.rect.getUpperLeft().getX() + this.speed;
         double width = this.rect.getWidth();
-        // wrap to the left side (but inside the left wall)
-        if (newX + width > GameConstants.WINDOW_WIDTH - GameConstants.WALL_THICKNESS) {
-            newX = GameConstants.WALL_THICKNESS;
+        // keep x in [-WINDOW_WIDTH, WINDOW_WIDTH) so paired paddles stay one screen
+        // apart
+        if (newX >= GameConstants.WINDOW_WIDTH) {
+            newX -= 2.0 * GameConstants.WINDOW_WIDTH;
         }
         this.rect = new Rectangle(new Point(newX, this.rect.getUpperLeft().getY()),
                 (int) width, (int) this.rect.getHeight());

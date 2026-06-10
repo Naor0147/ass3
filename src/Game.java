@@ -82,10 +82,12 @@ public class Game {
      * Set up the game objects.
      */
     public void initialize() {
+
         this.gui = new GUI(WINDOW_TITLE, GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
+        int paddleY = addPaddle();
+
         addWalls();
         addBlocks();
-        int paddleY = addPaddle();
         addBalls(paddleY);
     }
 
@@ -95,6 +97,8 @@ public class Game {
      */
     public void run() {
         int millisecondsPerFrame = MILLISECONDS_PER_SECOND / FRAMES_PER_SECOND;
+
+        sleeper.sleepFor(200);
         while (true) {
             long startTime = System.currentTimeMillis(); // timing
 
@@ -157,6 +161,11 @@ public class Game {
         Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), PADDLE_WIDTH, PADDLE_HEIGHT);
         Paddle paddle = new Paddle(paddleRect, keyboard, PADDLE_COLOR, PADDLE_SPEED);
         paddle.addToGame(this);
+        Rectangle paddleRect1 = new Rectangle(new Point(paddleX - GameConstants.WINDOW_WIDTH, paddleY),
+                PADDLE_WIDTH, PADDLE_HEIGHT);
+        Paddle paddle1 = new Paddle(paddleRect1, keyboard, PADDLE_COLOR, PADDLE_SPEED);
+        paddle1.addToGame(this);
+
         return paddleY;
     }
 
